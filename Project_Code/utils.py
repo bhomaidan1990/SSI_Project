@@ -1,3 +1,6 @@
+#================================
+#===  @Author: Deng Jianning ====
+#================================
 """
 This file contains utility functions that will be used 
 """
@@ -39,8 +42,8 @@ def pre_processing(imgPath, gtPath, opPath, normalize=True):
 
     gtList = os.listdir(gtFile)
 
-    opImgPath = savePath+'img/'
-    opGtPath = savePath+'label/'
+    opImgPath = os.path.jpoin(savePath,'img/')
+    opGtPath = os.path.join(savePath,'label/')
 
 
     if not os.path.isdir(savePath):
