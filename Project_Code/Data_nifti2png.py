@@ -48,22 +48,22 @@ if (not os.path.exists('Dataset')):
     os.mkdir('Dataset/masks/Lung_and_Covid_masks')
 #-------------------------------------------
 # Images
-# path = 'COVID-19-CT-Seg_20cases'
-# Dataset = glob.glob( os.path.join(path, '*.gz') )
-# ctr = 0
-# for image in Dataset:
-#     # Load images voxel
-#     images = nib.load(image).get_fdata()
-#     # Normalize data
-#     images = normalize_zscore(images)
-#     # Save as PNG
-#     ctr+=1
-#     if(not os.path.exists('Dataset/images/Case_'+str(ctr))):
-#         os.mkdir('Dataset/images/Case_'+str(ctr))
-#     for _id in range(images.shape[2]):
-#         imsave(os.path.join('Dataset/images','Case_'+
-#             str(ctr),str(ctr)+'_'+str(_id+1)+'.png'),
-#              resize(images[:,:,_id],(256,256),anti_aliasing=True),check_contrast=False)
+path = 'COVID-19-CT-Seg_20cases'
+Dataset = glob.glob( os.path.join(path, '*.gz') )
+ctr = 0
+for image in Dataset:
+    # Load images voxel
+    images = nib.load(image).get_fdata()
+    # Normalize data
+    images = normalize_zscore(images)
+    # Save as PNG
+    ctr+=1
+    if(not os.path.exists('Dataset/images/Case_'+str(ctr))):
+        os.mkdir('Dataset/images/Case_'+str(ctr))
+    for _id in range(images.shape[2]):
+        imsave(os.path.join('Dataset/images','Case_'+
+            str(ctr),str(ctr)+'_'+str(_id+1)+'.png'),
+             resize(images[:,:,_id],(256,256),anti_aliasing=True).astype(np.uint8),check_contrast=False)
 #-------------------------------------------
 # Lung Masks
 path = 'Lung_Mask'
@@ -74,13 +74,13 @@ for image in Dataset:
     images = nib.load(image).get_fdata()
     print('Lungs before: ',np.unique(images))
     # Save it as PNG
-    # ctr+=1
-    # if(not os.path.exists('Dataset/masks/Lung_masks/Case_'+str(ctr))):
-    #     os.mkdir('Dataset/masks/Lung_masks/Case_'+str(ctr))
-    # for _id in range(images.shape[2]):
-    #     imsave(os.path.join('Dataset/masks/Lung_masks','Case_'+
-    #         str(ctr),str(ctr)+'_'+str(_id+1)+'.png'),
-    #          resize(images[:,:,_id],(256,256),preserve_range=True),check_contrast=False)
+    ctr+=1
+    if(not os.path.exists('Dataset/masks/Lung_masks/Case_'+str(ctr))):
+        os.mkdir('Dataset/masks/Lung_masks/Case_'+str(ctr))
+    for _id in range(images.shape[2]):
+        imsave(os.path.join('Dataset/masks/Lung_masks','Case_'+
+            str(ctr),str(ctr)+'_'+str(_id+1)+'.png'),
+             resize(images[:,:,_id],(256,256),preserve_range=True).astype(np.uint8),check_contrast=False)
 #-------------------------------------------
 # Covid-19 Masks
 path = 'Infection_Mask'
@@ -89,15 +89,14 @@ ctr = 0
 for image in Dataset:
     # Load masks voxel
     images = nib.load(image).get_fdata()
-    print('Infection before: ',np.unique(images))
     # Save it as PNG
-    # ctr+=1
-    # if(not os.path.exists('Dataset/masks/Covid_masks/Case_'+str(ctr))):
-    #     os.mkdir('Dataset/masks/Covid_masks/Case_'+str(ctr))
-    # for _id in range(images.shape[2]):
-    #     imsave(os.path.join('Dataset/masks/Covid_masks','Case_'+
-    #         str(ctr),str(ctr)+'_'+str(_id+1)+'.png'),
-    #          resize(images[:,:,_id],(256,256),preserve_range=True),check_contrast=False)
+    ctr+=1
+    if(not os.path.exists('Dataset/masks/Covid_masks/Case_'+str(ctr))):
+        os.mkdir('Dataset/masks/Covid_masks/Case_'+str(ctr))
+    for _id in range(images.shape[2]):
+        imsave(os.path.join('Dataset/masks/Covid_masks','Case_'+
+            str(ctr),str(ctr)+'_'+str(_id+1)+'.png'),
+             resize(images[:,:,_id],(256,256),preserve_range=True).astype(np.uint8),check_contrast=False)
 #-------------------------------------------
 # Lungs + Covid-19 Masks
 path = 'Lung_and_Infection_Mask'
@@ -112,12 +111,8 @@ for image in Dataset:
     if(not os.path.exists('Dataset/masks/Lung_and_Covid_masks/Case_'+str(ctr))):
         os.mkdir('Dataset/masks/Lung_and_Covid_masks/Case_'+str(ctr))
     for _id in range(images.shape[2]):
-        resized = resize(images[:,:,_id],(256,256),preserve_range=True)
-        print('after resize : ',np.unique(resized))
+        resized = resize(images[:,:,_id],(256,256),preserve_range=True).astype(np.uint8)
         imsave(os.path.join('Dataset/masks/Lung_and_Covid_masks','Case_'+
             str(ctr),str(ctr)+'_'+str(_id+1)+'.png'),
              resized,check_contrast=False)
-        # imag = imread(os.path.join('Dataset/masks/Lung_and_Covid_masks','Case_'+
-        #      str(ctr),str(ctr)+'_'+str(_id+1)+'.png'))
-        # print('after save : ',np.unique(imag))
 #-------------------------------------------
