@@ -18,8 +18,19 @@ def imgNorm(img):
     
     return 255*(img - np.min(img))/div
 
+def oneHotMask(mask):
+    shape = mask.shape
+    shape = list(shape)
+    shape.append(np.max(mask))
+    result = np.zeros(shape)
+    # print(np.max(mask))
+    for i in range(3):
+        temp = np.zeros(mask.shape)
+        temp[mask==i+1] = 1
+        result[:,:,i] = temp
+    return result
 
-def pre_processing(imgPath, gtPath, opPath, normalize=True):
+def pre_processing(imgPath, gtPath, opPath, normalize=True, oneHot=True, newSize=[256,256]):
     """
     the ouput png file will be store in folder 'img' and 'label' under given opPath
 
@@ -27,9 +38,10 @@ def pre_processing(imgPath, gtPath, opPath, normalize=True):
     @param gtPath: folder contatining the groud truth nifti file
     @param opPath: output folder
     @param normalize: normalize the input or not
-
+    @param oneHot: convert the mask to one hot image or not
+    @param newSize: the size of the ouput img/label
+    
     example:
-    from utils import pre_processing
     imgPath = './COVID-19-CT-Seg_20cases/'
     gtPath = './Lung_and_Infection_Mask/'
     savePath = './processed/'
@@ -42,7 +54,7 @@ def pre_processing(imgPath, gtPath, opPath, normalize=True):
 
     gtList = os.listdir(gtFile)
 
-    opImgPath = os.path.jpoin(savePath,'img/')
+    opImgPath = os.path.join(savePath,'img/')
     opGtPath = os.path.join(savePath,'label/')
 
 
@@ -54,7 +66,6 @@ def pre_processing(imgPath, gtPath, opPath, normalize=True):
         os.mkdir(opGtPath)
 
     studyNum = len(gtList)
-    newSize = [256,256]
 
     for i in range(studyNum):
         gt = nib.load(gtFile + gtList[i]).get_fdata()
@@ -62,8 +73,11 @@ def pre_processing(imgPath, gtPath, opPath, normalize=True):
         
         slices = img.shape[2]
         for s in range(slices):
-            gtTemp = resize(gt[:,:,s], newSize, preserve_range=True)
-            # gtTemp = imgNorm(gtTemp)
+            if oneHot:
+                gtTemp = oneHotMask(gt[:,:,s])
+            else:
+                gtTemp = gt[:,:,s]
+            gtTemp = resize(gtTemp, newSize, preserve_range=True)
             gtTemp = gtTemp.astype(np.uint8)
             imgTemp = resize(img[:,:,s], newSize, preserve_range=True)
             imgTemp = imgNorm(imgTemp)
@@ -74,4 +88,3 @@ def pre_processing(imgPath, gtPath, opPath, normalize=True):
             imsave(opGtPath+gtName, gtTemp, check_contrast=False)
 
     return
-
