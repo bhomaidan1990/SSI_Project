@@ -70,8 +70,8 @@ def pre_processing(imgPath, gtPath, opPath, normalize=True, oneHot=True, newSize
     studyNum = len(gtList)
 
     for i in range(studyNum):
-        gt = nib.load(gtFile + gtList[i]).get_fdata()
-        img = nib.load(imgFile + gtList[i]).get_fdata()
+        gt = nib.load(os.path.join(gtFile , gtList[i])).get_fdata()
+        img = nib.load(os.path.join(imgFile, gtList[i])).get_fdata()
         
         slices = img.shape[2]
         for s in range(slices):
@@ -84,8 +84,8 @@ def pre_processing(imgPath, gtPath, opPath, normalize=True, oneHot=True, newSize
             imgTemp = resize(img[:,:,s], newSize, preserve_range=True)
             imgTemp = imgNorm(imgTemp)
             imgTemp = imgTemp.astype(np.uint8)
-            gtName = 'case_' + str(i) + '_slices_' + str(s) + '_gt.png'
-            imgName = 'case_' + str(i) + '_slices_' + str(s) + '.png'
+            gtName = 'case_' + str(i+1) + '_slices_' + str(s+1) + '.png'
+            imgName = 'case_' + str(i+1) + '_slices_' + str(s+1) + '.png'
             imsave(opImgPath+imgName, imgTemp, check_contrast=False)
             imsave(opGtPath+gtName, gtTemp, check_contrast=False)
 
