@@ -18,19 +18,20 @@ def imgNorm(img):
     
     return 255*(img - np.min(img))/div
 
-def oneHotMask(mask):
+
+def oneHotMask(mask, cataNum=4):
     shape = mask.shape
     shape = list(shape)
-    shape.append(np.max(mask))
+    shape.append(cataNum)
     result = np.zeros(shape)
     # print(np.max(mask))
-    for i in range(3):
+    for i in range(cataNum):
         temp = np.zeros(mask.shape)
         temp[mask==i+1] = 1
         result[:,:,i] = temp
     return result
 
-def pre_processing(imgPath, gtPath, opPath, normalize=True, oneHot=True, newSize=[256,256]):
+def pre_processing(imgPath, gtPath, opPath, normalize=True, oneHot=True, newSize=[256,256], cataNum=4):
     """
     the ouput png file will be store in folder 'img' and 'label' under given opPath
 
@@ -40,6 +41,7 @@ def pre_processing(imgPath, gtPath, opPath, normalize=True, oneHot=True, newSize
     @param normalize: normalize the input or not
     @param oneHot: convert the mask to one hot image or not
     @param newSize: the size of the ouput img/label
+    @param cataNum: number of catagories for mask
     
     example:
     imgPath = './COVID-19-CT-Seg_20cases/'
@@ -74,7 +76,7 @@ def pre_processing(imgPath, gtPath, opPath, normalize=True, oneHot=True, newSize
         slices = img.shape[2]
         for s in range(slices):
             if oneHot:
-                gtTemp = oneHotMask(gt[:,:,s])
+                gtTemp = oneHotMask(gt[:,:,s], cataNum=cataNum)
             else:
                 gtTemp = gt[:,:,s]
             gtTemp = resize(gtTemp, newSize, preserve_range=True)
