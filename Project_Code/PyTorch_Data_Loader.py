@@ -1,27 +1,25 @@
 #================================
 #===  @Author: Belal Hmedan  ====
 #================================
-##   Flexible data generator   ##
+##      PyTorch DataLoader     ##
 #--------------------------------
-# Reference:
-# https://www.kaggle.com/mpalermo/keras-pipeline-custom-generator-imgaug
-#--------------------------------------------------------------------------
 #============================
 # Import necessary libs
 #============================
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
 import numpy as np
-import keras
 from skimage.io import imread
-#----------------------------------------------------------
-# # in case of different BackBones # # 
-# from keras.applications.resnet50 import preprocess_input
-#----------------------------------------------------------
-class DataGenerator(keras.utils.Sequence):
-    #'Generates data for Keras'
-    def __init__(self, images_path, labels_path, batch_size=64,
-     image_dimensions = (256 ,256 ),n_channels=1,n_classes = 4, shuffle=False, augment=False):
+#------------------------------
+import torch
+import torchvision
+from torch.utils.data import Dataset, DataLoader
+#------------------------------
+
+class PNGDataset(Dataset):
+    #'Loads the data for PyTorch'
+    def __init__(self, images_path, labels_path,image_dimensions = (256 ,256 ),
+        n_channels=1,n_classes = 4, shuffle=False, augment=False):
 
         self.images_path  = images_path
         self.labels_path  = labels_path
@@ -31,14 +29,13 @@ class DataGenerator(keras.utils.Sequence):
         self.dim          = image_dimensions             # image dimensions
         self.n_channels   = n_channels                   # number of channels
         self.n_classes    = n_classes                    # number of classes
-        self.batch_size   = batch_size                   # batch size
         self.shuffle      = shuffle                      # shuffle bool
         self.augment      = augment                      # augment data bool
         self.on_epoch_end()
 
     def __len__(self):
         #'Denotes the number of batches per epoch'
-        return int(np.floor(len(self.images_list) / self.batch_size))
+        return len(self.images_list)
 
     def on_epoch_end(self):
         #'Updates indexes after each epoch'
@@ -47,13 +44,9 @@ class DataGenerator(keras.utils.Sequence):
             np.random.shuffle(self.indexes)
 
     def __getitem__(self, index):
-        #'Generate one batch of data'
-        # selects indices of data for next batch
-        indexes = self.indexes[index * self.batch_size : (index + 1) * self.batch_size]
-
         # select data and load images
-        images = np.stack([np.expand_dims(imread(os.path.join(self.images_path,self.images_list[k])),axis=2) for k in indexes],axis=0)
-        labels = np.stack([imread(os.path.join(self.labels_path,self.labels_list[k])) for k in indexes],axis=0)
+        images = torch.from_numpy(np.expand_dims(imread(os.path.join(self.images_path,self.images_list[index])),axis=2))
+        labels = torch.from_numpy(imread(os.path.join(self.labels_path,self.labels_list[index])))
          
         # preprocess and augment data
         if self.augment == True:
@@ -69,7 +62,6 @@ class DataGenerator(keras.utils.Sequence):
         #'Apply data augmentation'
         # Our Augmentation can be here or seperate!
         return images
-
 #----------------------------------------------------
 # Example
 #===========
@@ -77,6 +69,15 @@ class DataGenerator(keras.utils.Sequence):
 #-------------------------------------
 images_path = 'D:/Saudi_CV/Vibot/Smester_2/5_SSI/SSI_Project/20_Dataset/Deng_Dataset/img'
 labels_path = 'D:/Saudi_CV/Vibot/Smester_2/5_SSI/SSI_Project/20_Dataset/Deng_Dataset/label'
-datagenerator = DataGenerator(images_path, labels_path)
-images, labels = next(iter(datagenerator))
-print(images.shape,labels.shape)
+
+dataset = PNGDataset(images_path, labels_path)
+dataloader = DataLoader(dataset=dataset,batch_size=8, shuffle=True, num_workers=1)
+
+if __name__ == '__main__':
+    pass
+    # for a in dataloader:
+    #     print(a[0].shape,a[1].shape)
+
+    data = next(iter(dataloader))
+    images, labels = data
+    print(images.shape, labels.shape)
