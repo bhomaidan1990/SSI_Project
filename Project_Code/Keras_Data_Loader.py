@@ -53,7 +53,7 @@ class DataGenerator(keras.utils.Sequence):
 
         # select data and load images
         labels = np.stack([np.expand_dims(imread(os.path.join(self.images_path,self.images_list[k])),axis=2) for k in indexes],axis=0)
-        images = np.stack([np.expand_dims(imread(os.path.join(self.labels_path,self.labels_list[k])),axis=2) for k in indexes],axis=0)
+        images = np.stack([imread(os.path.join(self.labels_path,self.labels_list[k])) for k in indexes],axis=0)
         
         # preprocess and augment data
         if self.augment == True:
