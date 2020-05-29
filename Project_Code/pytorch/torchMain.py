@@ -8,6 +8,9 @@ import os
 import time
 import matplotlib.pyplot as plt
 from torchDataloader import MyDataset
+from torch.autograd import Variable
+import graphviz
+import torchviz
 
 def train(net, data_loader, opt, device, criterion):
     net.train()
@@ -88,6 +91,16 @@ if __name__ == "__main__":
     save_dir = strProjectFolder + '/save/'
     net = UNet(num_classes=4, input_channel=1)
     
+    # visualize the model 
+    # dummpy_input = np.zeros([1,1,256,256])
+    # dummpy_input = Variable(torch.rand(1,1,256,256))
+    # y = net(dummpy_input)
+
+    # graph = torchviz.make_dot(y.mean(), params=dict(net.named_parameters()))
+    # graph.render('graph', view=True, format='png')
+    # graph.view()
+    
+
     # load pre-trained model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if device == 'cuda':
