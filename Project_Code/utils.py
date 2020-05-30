@@ -27,7 +27,7 @@ def oneHotMask(mask, cataNum=4):
     # print(np.max(mask))
     for i in range(cataNum):
         temp = np.zeros(mask.shape)
-        temp[mask==i+1] = 1
+        temp[mask==i] = 1
         result[:,:,i] = temp
     return result
 
