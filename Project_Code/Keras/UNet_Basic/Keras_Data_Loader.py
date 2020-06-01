@@ -1,3 +1,14 @@
+#================================
+#===  @Author: Belal Hmedan  ====
+#================================
+##   Flexible data generator   ##
+#--------------------------------
+# Reference:
+# https://www.kaggle.com/mpalermo/keras-pipeline-custom-generator-imgaug
+#--------------------------------------------------------------------------
+#============================
+# Import necessary libs
+#============================
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
 import numpy as np

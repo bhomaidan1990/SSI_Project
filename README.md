@@ -1,5 +1,11 @@
 # SSI_Project
 
+ Students:
+
+ 1. Belal Hmedan
+ 2. Deng Jianning
+ 3. Thien Bao Bui
+
 Covid-19 CT Scans Segmentaion, Project of Scene Segmentation, and Interpretion
 
 ## Project Tasks
