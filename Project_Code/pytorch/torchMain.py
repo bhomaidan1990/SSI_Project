@@ -94,7 +94,7 @@ if __name__ == "__main__":
     
 
     # ======================================================
-    # efficientNet b7 from segmentation model library
+    # custom model with mobileNet
     # ======================================================
     # net = mobileUnet(torchvision.models.mobilenet_v2())
     # modelName = 'mobileNet'
