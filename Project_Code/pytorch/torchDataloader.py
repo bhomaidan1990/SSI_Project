@@ -54,14 +54,15 @@ class MyDataset(Dataset):
         # image = np.reshape(image, (1, image.shape[0], image.shape[1]))
         if self.img_size[0] == 3:
             image = skimage.color.gray2rgb(image)
-            if self.resize:
-                image = transform.resize(image, [self.img_size[1], self.img_size[2]])
-                img = crop2D(image, (self.img_size[1], self.img_size[2]))
             image = np.transpose(image, [2,0,1])
+            if self.resize:
+                # image = transform.resize(image, [self.img_size[1], self.img_size[2]])
+                image = crop2D(image, (self.img_size[1], self.img_size[2]))
+            # image = np.transpose(image, [2,0,1])
         else:
-            image = transform.resize(image, self.img_size)
-            img = np.expand_dims(image, 0)
-            img = crop2D(img, (self.img_size[1], self.img_size[2]))
+            # image = transform.resize(image, self.img_size)
+            image = np.expand_dims(image, 0)
+            image = crop2D(image, (self.img_size[1], self.img_size[2]))
         image = torch.from_numpy(image).type(torch.FloatTensor)
         label = imread(label_file)
         t = imread(label_file)
