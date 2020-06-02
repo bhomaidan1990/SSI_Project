@@ -19,7 +19,7 @@ def bland_altman_plot(m1, m2,
 
     Parameters
     ----------
-    m1, m2: pandas Series or array-like
+    m1, m2: 1D array-like or pandas Series
 
     sd_limit : float, default 1.96
         The limit of agreements expressed in terms of the standard deviation of
@@ -49,19 +49,24 @@ def bland_altman_plot(m1, m2,
 
    Returns
     -------
-    ax: matplotlib Axis object
+    Plot of Bland Altman
+    # ax: matplotlib Axis object
     """
-
+    # Compare the lengths of the samples coming from a two different methods
     if len(m1) != len(m2):
         raise ValueError('m1 does not have the same length as m2.')
     if sd_limit < 0:
         raise ValueError('sd_limit ({}) is less than 0.'.format(sd_limit))
-
+    # Compute the mean of the samples for both of them
     means = np.mean([m1, m2], axis=0)
+    # Compute the difference between samples
     diffs = m1 - m2
+    # Compute the mean difference between the samples
     mean_diff = np.mean(diffs)
+    # Compute the standard deviation of the difference between samples
     std_diff = np.std(diffs, axis=0)
 
+    # Plot Options for nice plot
     if ax is None:
         ax = plt.gca()
 
@@ -79,9 +84,10 @@ def bland_altman_plot(m1, m2,
         kwds['linestyle'] = '--'
     if 'linestyle' not in limit_lines_kwds:
         kwds['linestyle'] = ':'
-
+    # Scatter the means virsus the differences between samples on the plot
     ax.scatter(means, diffs, **scatter_kwds)
-    ax.axhline(mean_diff, **mean_line_kwds)  # draw mean line.
+    # draw mean line.
+    ax.axhline(mean_diff, **mean_line_kwds)  
 
     # Annotate mean line with mean difference.
     ax.annotate('mean diff:\n{}'.format(np.round(mean_diff, 2)),
@@ -127,7 +133,7 @@ def bland_altman_plot(m1, m2,
 #--------------------------------------------------------------------------------------------
 # Example:
 #-----------------------
-x = np.random.rand(100)
-y = np.random.rand(100)
+# x = np.random.rand(100)
+# y = np.random.rand(100)
 
-bland_altman_plot(x, y)
+# bland_altman_plot(x, y)
