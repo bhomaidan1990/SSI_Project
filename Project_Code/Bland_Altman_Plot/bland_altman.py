@@ -20,7 +20,8 @@ def bland_altman_plot(m1, m2,
     Parameters
     ----------
     m1, m2: 1D array-like or pandas Series
-
+    (in our case m1 should be the segmentation mask flattened into 1D array,
+    while, m2 is the prediction flattened into 1D array )
     sd_limit : float, default 1.96
         The limit of agreements expressed in terms of the standard deviation of
         the differences. If `md` is the mean of the differences, and `sd` is
