@@ -69,8 +69,8 @@ def draw_roc_curve(gt,pred,multi=False,num_class = 4,img_height = 256,img_width 
             return
 
         num_test_samples = pred.shape[0]
-        gt_sep = np.zeros((num_test_samples,IMG_HEIGHT, IMG_WIDTH), dtype=np.uint8)
-        pred_sep = np.zeros((num_test_samples,IMG_HEIGHT, IMG_WIDTH), dtype=np.uint8)
+        gt_sep = np.zeros((num_test_samples,img_height, img_width), dtype=np.uint8)
+        pred_sep = np.zeros((num_test_samples,img_height, img_width), dtype=np.uint8)
     
     else:
         if gt.ndim != 3 or pred.ndim != 4:
@@ -78,8 +78,8 @@ def draw_roc_curve(gt,pred,multi=False,num_class = 4,img_height = 256,img_width 
             return
 
         # gt = np.argmax(gt,axis=-1)
-        gt_sep = np.zeros((IMG_HEIGHT, IMG_WIDTH), dtype=np.uint8)
-        pred_sep = np.zeros((IMG_HEIGHT, IMG_WIDTH), dtype=np.uint8)
+        gt_sep = np.zeros((img_height, img_width), dtype=np.uint8)
+        pred_sep = np.zeros((img_height, img_width), dtype=np.uint8)
     
     gt = np.argmax(gt,axis=-1)
     pred = np.argmax(pred,axis=-1)
