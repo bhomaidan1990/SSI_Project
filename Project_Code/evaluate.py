@@ -23,7 +23,7 @@ import numpy as np
 # import SimpleITK as sitk
 import scipy.ndimage as ndimage
 from sklearn.metrics import roc_curve, auc, roc_auc_score
-
+from itertools import cycle
 # code
 def roc_preprocess(pred):
     """
