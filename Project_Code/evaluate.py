@@ -22,10 +22,26 @@ from time import time
 import numpy as np
 # import SimpleITK as sitk
 import scipy.ndimage as ndimage
+from sklearn.metrics import roc_curve, auc, roc_auc_score
 
 # code
+def roc_preprocess(pred):
+    """
+    Convert pred mask from [256,256,4] to [1,256,256,4]
+    @param pred: prediction mask of shape [256,256,4]
 
-def draw_roc_curve(gt,pred,multi=False,num_class = 4):
+    @return mask_pred: prediction mask of shape [1,256,256,4]
+    """
+    mask_pred = pred
+    mask_pred = np.expand_dims(mask_pred,axis=-1)
+    mask_pred = np.swapaxes(mask_pred,2,3)
+    mask_pred = np.swapaxes(mask_pred,1,2)
+    mask_pred = np.swapaxes(mask_pred,0,1)
+
+    return mask_pred
+
+
+def draw_roc_curve(gt,pred,multi=False,num_class = 4,img_height = 256,img_width = 256):
     """
     Draw ROC curve for each class
     
