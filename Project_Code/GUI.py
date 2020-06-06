@@ -340,6 +340,33 @@ class Ui_MainWindow(object):
         #     shutil.rmtree("temporary", ignore_errors=True) 
         if(self.directory is not None):
             self.directory = None
+            self.image     = None
+            self.mask      = None
+            self.segment   = None
+            self.metrics   = {}
+            #-----------------------------------
+            mask_arr = np.zeros((128,128))
+            qimage = QImage(mask_arr, mask_arr.shape[0],mask_arr.shape[1],QtGui.QImage.Format_RGB32)
+            pix = QPixmap(qimage)
+            mask = pix.createMaskFromColor(QColor(255, 255, 255), Qt.MaskOutColor)
+            #-----------------------------------
+            self.LB_Image.setPixmap(mask)
+            self.LB_Image.setScaledContents(True)            
+            self.LB_Mask.setPixmap(mask)
+            self.LB_Mask.setScaledContents(True) 
+            self.LB_Prediction.setPixmap(mask)
+            self.LB_Prediction.setScaledContents(True)
+            #-----------------------------------
+            # Hausdorff
+            self.LB_HausdorffValue.setText("0")
+            # Dice
+            self.LB_DiceValue.setText("0")
+            # Jaccard
+            self.LB_JaccardValue.setText("0")
+            # P 
+            self.LB_P_Value.setText("0")
+            # Pearson Corellation Coefficient
+            self.LB_PearsonValue.setText("0")
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
         """Generate 'question' dialog on clicking 'X' button in title bar.
@@ -366,7 +393,7 @@ class Ui_MainWindow(object):
     def saveSeg(self):
         if(self.directory is not None):
             path = QFileDialog.getExistingDirectory(None,'Select file')
-            # copytree('temporary/',path)
+            imsave(os.path.join(path,'segmentaion.png'), (255*self.segment[...,1:4]).astype(np.uint8))
     #---------------------------------------------------------------------------------------------
     def loadImage(self):
         self.dialog = QFileDialog()
@@ -459,7 +486,8 @@ class Ui_MainWindow(object):
     def plotCurves(self):
         if((self.segment is not None) and (self.mask is not None)):
             bland_altman_plot(self.mask, self.segment)
-            draw_roc_curve(self.mask, self.segment)
+            pred = roc_preprocess(self.segment)
+            draw_roc_curve(self.mask, pred)
             if (os.path.isfile(str('BlandAltman.png')) and os.path.isfile(str('ROC.png'))):
                 Dialog = QtWidgets.QDialog()
                 ui = PlotsWindow()
