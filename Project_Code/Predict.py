@@ -41,19 +41,7 @@ def KerasPredict(image2D, modelPath='Trained_model/Modified_Unet/final_unet_cce.
     return pred
 #====================================================
 
-def PyTorchPredict(image2D,modelPath='Trained_model/mobilenet_model.tar'):
-
-    pass
-#  return pred # (256x256x4) 0 or 1 values
-
-
-"""
-# This Function to be called `PyTorchPredict` with image input (HxW) 2D,
-# and output: 256x256x4 (0 and 1 values only, no probabilites here)
-# to be added to the script "SSI_Project/Project_Code/Predict.py"
-# PyTorchPredict(image2D, backbone, modelPath) ---> 256x256x4 prediction 
-"""
-def eval(img, backbone='mobilenet', model_file='./model.tar'):
+def eval(img, backbone='mobilenet', model_file='Trained_model/mobilenet_model.tar'):
     """
 
     @param img: input image, with order at [N,C,H,W], N for batch size, C for channel.
@@ -119,5 +107,7 @@ def crop2D_mask(img, newSize):
         ey = 1
     cx = int(cropX/2)
     cy = int(cropY/2)
-
-    return img[cx:x-cx-ex,cy:y-cy-ey, :]
+    if(len(img.shape)==3):
+        return img[cx:x-cx-ex,cy:y-cy-ey, :]
+    if(len(img.shape)==2):
+        return img[cx:x-cx-ex,cy:y-cy-ey]
