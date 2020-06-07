@@ -89,22 +89,27 @@ def eval(img, backbone='mobilenet', model_file='Trained_model/mobileNet_new.tar'
 
     pred = pred.cpu().detach().numpy()
 
+    # # Argmax
+    # #============================
     # pred = np.argmax(pred,axis=1)
-    pred[pred>=0.5] = 1
-    pred[pred< 0.5] = 0
 
     # [_, x,y] = pred.shape
     
-    pred = np.squeeze(pred)
-
-    # pred = np.reshape(pred, (x,y))
-
-    pred = np.transpose(pred, [1,2,0])
-
+    # pred = np.reshape(pred, (x,y))   
     # pred = oneHotMask(pred)
 
 
+    # Thresholding 
+    # #============================
+    pred[pred>=0.5] = 1
+    pred[pred< 0.5] = 0 
+
+    pred = np.squeeze(pred)
+
+    pred = np.transpose(pred, [1,2,0])
+
     return pred
+
 
 def crop2D_mask(img, newSize):
     x = img.shape[0]

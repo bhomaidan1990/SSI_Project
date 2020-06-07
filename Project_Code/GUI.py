@@ -7,12 +7,10 @@ import sys
 import shutil
 import numpy as np
 from skimage.io import imread, imsave
-# from scipy.stats import pearsonr
-# from scipy.stats.mstats import pearsonr
 #---------------------------------------------------
-# KerasPredict(image2D,modelPath)   ---> 256x256x4 prediction (0 and 1 values only, no probabilites here)
+# KerasPredict(image2D,modelPath)
 from Predict import KerasPredict  
-# PyTorchPredict(image2D, Backbone, modelPath) ---> 256x256x4 prediction (0 and 1 values only, no probabilites here) 
+# eval(image2D, Backbone, modelPath) 
 from Predict import crop2D_mask, eval 
 from evaluate import *
 from Plots_GUI import PlotsWindow
@@ -442,13 +440,9 @@ class Ui_MainWindow(object):
         self.metrics['Jaccard']   = 100*jc(self.segment, self.mask)
         self.LB_JaccardValue.setText(str(round(self.metrics['Jaccard'],3))+" %")
         # P 
-        # print(pearsonr(self.segment.ravel(), self.mask.ravel()))
-        # self.metrics['P_Value']   = pearsonr(self.segment.ravel(), self.mask.ravel())[1]
-        # np.argmax(self.segment,axis=-1), np.argmax(self.mask,axis=-1)
         self.metrics['P_Value']   = volume_change_correlation(self.segment, self.mask)[1]
         self.LB_P_Value.setText(str(round(self.metrics['P_Value'],3)))
         # Pearson Corellation Coefficient
-        # self.metrics['Pearson']   = pearsonr(self.segment.ravel(), self.mask.ravel())[0]
         self.metrics['Pearson']   = volume_change_correlation(self.segment, self.mask)[0]
         self.LB_PearsonValue.setText(str(round(self.metrics['Pearson'],3)))
     #---------------------------------------------------------------------------------------------
