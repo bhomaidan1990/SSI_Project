@@ -100,3 +100,21 @@ def eval(img, backbone='mobilenet', model_file='./model.tar'):
 
     pred = np.transpose(pred, [1,2,0])
     return pred
+
+def crop2D_mask(img, newSize):
+    x = img.shape[0]
+    y = img.shape[1]
+    cropX = x - newSize[0]
+    cropY = y - newSize[1]
+    if cropX % 2 == 0:
+        ex = 0
+    else:
+        ex = 1
+    if cropY % 2 == 0:
+        ey = 0
+    else:
+        ey = 1
+    cx = int(cropX/2)
+    cy = int(cropY/2)
+
+    return img[cx:x-cx-ex,cy:y-cy-ey, :]
