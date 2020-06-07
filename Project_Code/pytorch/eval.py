@@ -4,7 +4,12 @@ from torchModel import UNet, mobileUnet
 from torchDataloader import crop3D
 import segmentation_models_pytorch as smp
 
-
+"""
+# This Function to be called `PyTorchPredict` with image input (HxW) 2D,
+# and output: 256x256x4 (0 and 1 values only, no probabilites here)
+# to be added to the script "SSI_Project/Project_Code/Predict.py"
+# PyTorchPredict(image2D, backbone, modelPath) ---> 256x256x4 prediction 
+"""
 def eval(img, backbone='mobilenet', model_file='./model.tar'):
     """
 

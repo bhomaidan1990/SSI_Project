@@ -3,7 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import keras
 import numpy as np
 
-def KerasPredict(image2D, modelPath='Trained_model/Basic_unet/unet_basic_cce.h5'):
+def KerasPredict(image2D, modelPath='Trained_model/Modified_Unet/final_unet_cce.h5'):
     # Image
     image3D= np.expand_dims(image2D, axis=0)
     imageTensor = np.expand_dims(image3D, axis=3)
