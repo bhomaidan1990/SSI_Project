@@ -123,11 +123,11 @@ def get_encoder(model):
     return encoder_list
     
 class convUpSample(nn.Module):
-    def __init__(self, ipc, opc, uks=[2,2], cks=[3,3], cpadding=[1,1],ustride=[2,2]):
+    def __init__(self, ipc, opc, uks=[2,2], cks=[3,3], cpadding=[1,1],ustride=[2,2], se_module=False):
         # ipc after concatenation
         super(convUpSample, self).__init__()
         # self.conv = nn.Conv2d(in_channels=ipc,out_channels=opc,kernel_size=cks,padding=cpadding)
-        self.block = resBlcok(ipc, opc, ks=cks, pd=cpadding)
+        self.block = resBlcok(ipc, opc, ks=cks, pd=cpadding, se_module=se_module)
         self.bn1 = nn.BatchNorm2d(opc, track_running_stats=True, momentum=0.1, eps=1e-5)
         self.relu = nn.ReLU6(inplace=True)
         self.upsample = nn.ConvTranspose2d(in_channels=opc, out_channels=opc, kernel_size=uks, stride=[2,2])
@@ -147,10 +147,10 @@ class mobileUnet(nn.Module):
         self.center_bn = nn.BatchNorm2d(320, track_running_stats=True, momentum=0.1, eps=1e-5)
         self.decoder_list = []
         self.up1 = convUpSample(320, 96)
-        self.decoder_list.append(convUpSample(96+96, 48))
-        self.decoder_list.append(convUpSample(32+48, 36))
-        self.decoder_list.append(convUpSample(24+36, 24))
-        self.decoder_list.append(convUpSample(16+24, 32))
+        self.decoder_list.append(convUpSample(96+96, 48, se_module=True))
+        self.decoder_list.append(convUpSample(32+48, 36, se_module=True))
+        self.decoder_list.append(convUpSample(24+36, 24, se_module=True))
+        self.decoder_list.append(convUpSample(16+24, 32, se_module=True))
         self.decoder_list = nn.Sequential(*self.decoder_list)
         self.final = nn.Conv2d(32, 4, [3,3], padding=[1,1])
         self.bn = nn.BatchNorm2d(4, track_running_stats=True, momentum=0.1, eps=1e-5)
@@ -186,14 +186,22 @@ class mobileUnet(nn.Module):
 # blocks for general usage
 # ======================================================
 class CBRBlock(nn.Module):
-    def __init__(self, ipc, opc, ks=(3,3), pd=(1,1), sd=(1,1)):
+    def __init__(self, ipc, opc, ks=(3,3), pd=(1,1), sd=(1,1), se_module=False):
         super(CBRBlock, self).__init__()
         self.conv = nn.Conv2d(ipc, opc, kernel_size=ks, padding=pd, stride=sd)
         self.bn = nn.BatchNorm2d(opc, track_running_stats=True, momentum=0.1, eps=1e-5)
         self.relu6 = nn.ReLU6(inplace=True)
+        self.se_module = se_module
+        if self.se_module:
+            self.se = SELayer(opc)
+        else:
+            self.se = None
+
     
     def forward(self,x):
         x = self.conv(x)
+        if self.se is not None:
+            x = self.se(x)
         x = self.bn(x)
         x = self.relu6(x)
         return x
@@ -201,11 +209,11 @@ class CBRBlock(nn.Module):
 
 
 class resBlcok(nn.Module):
-    def __init__(self, ipc, opc, ks=(3,3), pd=(1,1), sd=(1,1)):
+    def __init__(self, ipc, opc, ks=(3,3), pd=(1,1), sd=(1,1), se_module=False):
         super(resBlcok, self).__init__()
-        self.block1 = CBRBlock(ipc, opc, ks=ks, pd=pd, sd=sd)
-        self.block2 = CBRBlock(opc, opc)
-        self.block3 = CBRBlock(opc, opc)
+        self.block1 = CBRBlock(ipc, opc, ks=ks, pd=pd, sd=sd, se_module=se_module)
+        self.block2 = CBRBlock(opc, opc, se_module=se_module)
+        self.block3 = CBRBlock(opc, opc, se_module=se_module)
 
     def forward(self, x):
         x1 = self.block1(x)
@@ -213,3 +221,33 @@ class resBlcok(nn.Module):
         x = self.block3(x)
         x = F.relu6(x + x1)
         return x
+
+
+# ======================================================
+# attention layer
+# ======================================================
+
+
+
+
+# ======================================================
+# SE module
+# ======================================================
+# cite from: https://github.com/moskomule/senet.pytorch/blob/master/senet/se_module.py
+class SELayer(nn.Module):
+    def __init__(self, channel, reduction=4):
+        super(SELayer, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channel, channel // reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(channel // reduction, channel, bias=False),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y).view(b, c, 1, 1)
+        return x * y.expand_as(x)
+
