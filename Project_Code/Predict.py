@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torchvision
 from torchModel import UNet, mobileUnet
-from torchDataloader import crop3D
+from torchDataloader import crop3D, oneHotMask
 import segmentation_models_pytorch as smp
 from skimage.color import gray2rgb
 
@@ -65,9 +65,9 @@ def eval(img, backbone='mobilenet', model_file='./model.tar'):
               for mobileNet, dimension for prediction would be [N, 4, 224, 224]
               for others, output dimensions would be [N, 4, 256, 256]
     """
-    ip_size = img.shape
+    
     img = gray2rgb(img)
-    img = np.transpose(2,0,1)
+    img = np.transpose(img, (2,0,1))
     img = np.expand_dims(img, 0)
 
     if backbone == 'mobilenet':
@@ -91,14 +91,17 @@ def eval(img, backbone='mobilenet', model_file='./model.tar'):
     pred = net(img_torch)
     pred = pred.cpu().detach().numpy()
 
-    pred[pred > 0.5] = 1
-    pred[pred != 1] = 0
-    if backbone == 'mobilenet':
-        pred = np.reshape(4,224,224)
-    else:
-        pred = np.reshape(4,ip_size[0], ip_size[1])
+    pred = np.argmax(pred,axis=1)
 
-    pred = np.transpose(pred, [1,2,0])
+    [_, x,y] = pred.shape
+    
+    pred = np.reshape(pred, (x,y))
+
+    # pred = np.transpose(pred, [1,2,0])
+
+    pred = oneHotMask(pred)
+
+
     return pred
 
 def crop2D_mask(img, newSize):
