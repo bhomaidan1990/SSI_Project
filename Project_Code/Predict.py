@@ -81,6 +81,9 @@ def eval(img, backbone='mobilenet', model_file='./model.tar'):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if device == 'cuda':
         torch.cuda.empty_cache() 
+    else:
+        print('This model required GPU')
+        return
     net.to(device)
     net.eval()
     img_torch = torch.from_numpy(img).type(torch.FloatTensor).to(device)
