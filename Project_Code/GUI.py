@@ -10,8 +10,8 @@ from skimage.io import imread, imsave
 #---------------------------------------------------
 # KerasPredict(image2D,modelPath)   ---> 256x256x4 prediction (0 and 1 values only, no probabilites here)
 from Predict import KerasPredict  
-# PyTorchPredict(image2D,modelPath) ---> 256x256x4 prediction (0 and 1 values only, no probabilites here) 
-#from Predict import PyTorchPredict 
+# PyTorchPredict(image2D, Backbone, modelPath) ---> 256x256x4 prediction (0 and 1 values only, no probabilites here) 
+from Predict import crop2D_mask, eval 
 from evaluate import *
 from Plots_GUI import PlotsWindow
 #---------------------------------------------------
@@ -466,7 +466,9 @@ class Ui_MainWindow(object):
                 if(self.mask is not None):
                     # Deng Prediction Interface function to be called here
                     #-----------------------------------------------------
-                    self.segment = KerasPredict(self.image)
+                    self.image   = crop2D_mask(self.image, (224,224))
+                    self.mask    = crop2D_mask(self.mask,  (224,224))
+                    self.segment = eval(self.image)
                     #-----------------------------------------------------
                     self.getMetrics()
                     # Show Segmentation
