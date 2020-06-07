@@ -946,8 +946,8 @@ def volume_change_correlation(results, references):
     
     results_volumes_changes = results_volumes[1:] - results_volumes[:-1]
     references_volumes_changes = references_volumes[1:] - references_volumes[:-1] 
-    
-    return pearsonr(results_volumes_changes, references_volumes_changes) # returns (Pearson's correlation coefficient, 2-tailed p-value)
+    # returns (Pearson's correlation coefficient, 2-tailed p-value)
+    return pearsonr(results_volumes_changes, references_volumes_changes)
     
 def obj_assd(result, reference, voxelspacing=None, connectivity=1):
     """

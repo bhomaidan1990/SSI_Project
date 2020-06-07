@@ -7,6 +7,8 @@ import sys
 import shutil
 import numpy as np
 from skimage.io import imread, imsave
+# from scipy.stats import pearsonr
+# from scipy.stats.mstats import pearsonr
 #---------------------------------------------------
 # KerasPredict(image2D,modelPath)   ---> 256x256x4 prediction (0 and 1 values only, no probabilites here)
 from Predict import KerasPredict  
@@ -379,16 +381,29 @@ class Ui_MainWindow(object):
             QMessageBox.Save | QMessageBox.Close | QMessageBox.Cancel,  QMessageBox.Save)
 
         if reply == QMessageBox.Close:
+            if(os.path.isfile("segmentPyTorch.png")):
+                os.remove("segmentPyTorch.png")
+            if(os.path.isfile("BlandAltman.png")):
+                os.remove("BlandAltman.png")
+            if(os.path.isfile("ROC.png")):
+                os.remove("ROC.png")
+
             app.quit()
+
         elif reply == QMessageBox.Save:
-            self.saveSeg()
+            if(self.segment is not None):
+                self.saveSeg()
+
+            if(os.path.isfile("segmentPyTorch.png")):
+                os.remove("segmentPyTorch.png")
+            if(os.path.isfile("BlandAltman.png")):
+                os.remove("BlandAltman.png")
+            if(os.path.isfile("ROC.png")):
+                os.remove("ROC.png")
+
             app.quit()
         else:
-            pass
-
-    #---------------------------------------------------------------------------------------------
-    def close(self):
-        QCoreApplication.instance().quit
+            QCoreApplication.instance().quit
     #---------------------------------------------------------------------------------------------
     def saveSeg(self):
         if(self.directory is not None):
@@ -427,10 +442,14 @@ class Ui_MainWindow(object):
         self.metrics['Jaccard']   = 100*jc(self.segment, self.mask)
         self.LB_JaccardValue.setText(str(round(self.metrics['Jaccard'],3))+" %")
         # P 
-        self.metrics['P_Value']   = 100*volume_change_correlation(self.segment, self.mask)[0]
-        self.LB_P_Value.setText(str(round(self.metrics['P_Value'],3))+' %')
+        # print(pearsonr(self.segment.ravel(), self.mask.ravel()))
+        # self.metrics['P_Value']   = pearsonr(self.segment.ravel(), self.mask.ravel())[1]
+        # np.argmax(self.segment,axis=-1), np.argmax(self.mask,axis=-1)
+        self.metrics['P_Value']   = volume_change_correlation(self.segment, self.mask)[1]
+        self.LB_P_Value.setText(str(round(self.metrics['P_Value'],3)))
         # Pearson Corellation Coefficient
-        self.metrics['Pearson']   = volume_change_correlation(self.segment, self.mask)[1]
+        # self.metrics['Pearson']   = pearsonr(self.segment.ravel(), self.mask.ravel())[0]
+        self.metrics['Pearson']   = volume_change_correlation(self.segment, self.mask)[0]
         self.LB_PearsonValue.setText(str(round(self.metrics['Pearson'],3)))
     #---------------------------------------------------------------------------------------------
     def SegmentProcess(self):
@@ -473,8 +492,9 @@ class Ui_MainWindow(object):
                     self.getMetrics()
                     # Show Segmentation
                     segment = (255*self.segment[...,1:4]).astype(np.uint8)
-                    qimg = QImage(segment,segment.shape[0],segment.shape[1],QImage.Format_RGB888) 
-                    qmap = QPixmap(qimg)
+                    imsave('segmentPyTorch.png', segment)
+                    # qimg = QImage(segment, segment.shape[0], segment.shape[1], QImage.Format_RGB888) 
+                    qmap = QPixmap('segmentPyTorch.png')
                     self.LB_Prediction.setPixmap(qmap)
                     self.LB_Prediction.setScaledContents(True)
                 else:

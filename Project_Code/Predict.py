@@ -8,6 +8,7 @@ from torchModel import UNet, mobileUnet
 from torchDataloader import crop3D, oneHotMask
 import segmentation_models_pytorch as smp
 from skimage.color import gray2rgb
+from numba import cuda
 
 def KerasPredict(image2D, modelPath='Trained_model/Modified_Unet/final_unet_cce.h5'):
     # Image
@@ -31,7 +32,9 @@ def KerasPredict(image2D, modelPath='Trained_model/Modified_Unet/final_unet_cce.
         # Threshold the output
         prediction[prediction>=0.5] = 1
         prediction[prediction< 0.5] = 0
-
+        
+        cuda.select_device(0)
+        cuda.close()
         # Squeeze the Extra dimensions
         pred = np.squeeze(prediction)
 
@@ -64,7 +67,7 @@ def eval(img, backbone='mobilenet', model_file='Trained_model/mobileNet_new.tar'
     elif backbone == 'efficientnet':
         net = smp.Unet('efficientnet-b7', classes = 4)
     else:
-        net = UNet(num_classes=4, input_channel=3)
+        net = smp.UNet(num_classes=4, input_channel=3)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if device.type == 'cuda':
@@ -82,15 +85,19 @@ def eval(img, backbone='mobilenet', model_file='Trained_model/mobileNet_new.tar'
     pred = net(img_torch)
     pred = pred.cpu().detach().numpy()
 
-    pred = np.argmax(pred,axis=1)
+    # pred = np.argmax(pred,axis=1)
+    pred[pred>=0.5] = 1
+    pred[pred< 0.5] = 0
 
-    [_, x,y] = pred.shape
+    # [_, x,y] = pred.shape
     
-    pred = np.reshape(pred, (x,y))
+    pred = np.squeeze(pred)
 
-    # pred = np.transpose(pred, [1,2,0])
+    # pred = np.reshape(pred, (x,y))
 
-    pred = oneHotMask(pred)
+    pred = np.transpose(pred, [1,2,0])
+
+    # pred = oneHotMask(pred)
 
 
     return pred
