@@ -67,7 +67,7 @@ def eval(img, backbone='mobilenet', model_file='Trained_model/mobilenet_model.ta
         net = UNet(num_classes=4, input_channel=3)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    if device == 'cuda':
+    if device.type == 'cuda':
         torch.cuda.empty_cache() 
     else:
         print('This model required GPU')
