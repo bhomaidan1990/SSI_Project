@@ -173,8 +173,12 @@ def bland_altman_plot(m1, m2,
     Plot of Bland Altman
     # ax: matplotlib Axis object
     """
+    m1 = np.argmax(m1,axis=2)
+    m2 = np.argmax(m2,axis=2)
+
     m1 = m1.ravel()
     m2 = m2.ravel()
+    
     # Compare the lengths of the samples coming from a two different methods
     if len(m1) != len(m2):
         raise ValueError('m1 does not have the same length as m2.')
