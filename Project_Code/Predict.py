@@ -3,6 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import keras
 import numpy as np
 import torch
+import torch.nn.functional as F
 import torchvision
 from torchModel import UNet, mobileUnet
 from torchDataloader import crop3D, oneHotMask
@@ -81,8 +82,11 @@ def eval(img, backbone='mobilenet', model_file='Trained_model/mobileNet_new.tar'
     # img_torch = img_torch
     pretrained = torch.load(model_file)
     net.load_state_dict(pretrained['model'])
-
+    
     pred = net(img_torch)
+
+    pred = F.softmax(pred, dim=1)
+
     pred = pred.cpu().detach().numpy()
 
     # pred = np.argmax(pred,axis=1)
