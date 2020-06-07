@@ -3,7 +3,8 @@ import torchvision
 from torchModel import UNet, mobileUnet
 from torchDataloader import crop3D
 import segmentation_models_pytorch as smp
-
+import numpy as np
+from skimage.color import gray2rgb
 """
 # This Function to be called `PyTorchPredict` with image input (HxW) 2D,
 # and output: 256x256x4 (0 and 1 values only, no probabilites here)
@@ -22,6 +23,10 @@ def eval(img, backbone='mobilenet', model_file='./model.tar'):
               for mobileNet, dimension for prediction would be [N, 4, 224, 224]
               for others, output dimensions would be [N, 4, 256, 256]
     """
+    ip_size = img.shape
+    img = gray2rgb(img)
+    img = np.transpose(2,0,1)
+    img = np.expand_dims(img, 0)
 
     if backbone == 'mobilenet':
         net = mobileUnet(torchvision.models.mobilenet_v2())
@@ -44,4 +49,12 @@ def eval(img, backbone='mobilenet', model_file='./model.tar'):
     pred = net(img_torch)
     pred = pred.cpu().detach().numpy()
 
+    pred[pred > 0.5] = 1
+    pred[pred != 1] = 0
+    if backbone == 'mobilenet':
+        pred = np.reshape(4,224,224)
+    else:
+        pred = np.reshape(4,ip_size[0], ip_size[1])
+
+    pred = np.transpose(pred, [1,2,0])
     return pred
