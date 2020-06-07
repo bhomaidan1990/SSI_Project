@@ -41,7 +41,7 @@ def KerasPredict(image2D, modelPath='Trained_model/Modified_Unet/final_unet_cce.
     return pred
 #====================================================
 
-def eval(img, backbone='mobilenet', model_file='Trained_model/mobilenet_model.tar'):
+def eval(img, backbone='mobilenet', model_file='Trained_model/mobileNet_new.tar'):
     """
 
     @param img: input image, with order at [N,C,H,W], N for batch size, C for channel.
