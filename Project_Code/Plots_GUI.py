@@ -68,3 +68,7 @@ class PlotsWindow(object):
             self.LB_ROC.setPixmap(qmap2)
             self.LB_ROC.setScaledContents(True)
 
+            if(os.path.isfile("BlandAltman.png")):
+                os.remove("BlandAltman.png")
+            if(os.path.isfile("ROC.png")):
+                os.remove("ROC.png")

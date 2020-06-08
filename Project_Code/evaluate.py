@@ -258,8 +258,10 @@ def bland_altman_plot(m1, m2,
     ax.tick_params(labelsize=13)
     plt.tight_layout()
     plt.savefig("BlandAltman.png")
+    plt.close('all')
     # plt.show()
     # return ax
+
 #--------------------------------------------------------------------------------------------
 # Example:
 #-----------------------
