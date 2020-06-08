@@ -1,6 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
 import keras
+import tensorflow as tf
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -12,6 +13,7 @@ from skimage.color import gray2rgb
 from numba import cuda
 
 def KerasPredict(image2D, modelPath='Trained_model/Modified_Unet/final_unet_cce.h5'):
+
     # Image
     image3D= np.expand_dims(image2D, axis=0)
     imageTensor = np.expand_dims(image3D, axis=3)
@@ -25,21 +27,24 @@ def KerasPredict(image2D, modelPath='Trained_model/Modified_Unet/final_unet_cce.
        
         # # Compile The PreTrained Model
         # model.compile(loss=loss, optimizer=optim, metrics=metrics)
-
+        
         model = keras.models.load_model(modelPath)  
-
+        
         prediction = model.predict(imageTensor,verbose=1)
 
         # Threshold the output
         prediction[prediction>=0.5] = 1
         prediction[prediction< 0.5] = 0
-        
+       
+        del model
         cuda.select_device(0)
         cuda.close()
+
         # Squeeze the Extra dimensions
         pred = np.squeeze(prediction)
 
     else:
+
         pred = None
    
     return pred
@@ -107,6 +112,10 @@ def eval(img, backbone='mobilenet', model_file='Trained_model/mobileNet_new.tar'
     pred = np.squeeze(pred)
 
     pred = np.transpose(pred, [1,2,0])
+    #=============================
+    del net
+    if device.type == 'cuda':
+        torch.cuda.empty_cache() 
 
     return pred
 

@@ -367,6 +367,13 @@ class Ui_MainWindow(object):
             self.LB_P_Value.setText("0")
             # Pearson Corellation Coefficient
             self.LB_PearsonValue.setText("0")
+            # Reset Figures 
+            if(os.path.isfile("segmentPyTorch.png")):
+                os.remove("segmentPyTorch.png")
+            if(os.path.isfile("BlandAltman.png")):
+                os.remove("BlandAltman.png")
+            if(os.path.isfile("ROC.png")):
+                os.remove("ROC.png")
     #---------------------------------------------------------------------------------------------
     def closeEvent(self, event):
         """Generate 'question' dialog on clicking 'X' button in title bar.
@@ -452,9 +459,9 @@ class Ui_MainWindow(object):
         # Keras
         if(platform == 'Keras'):
             # Check Image
-            if(self.image is not None):
+            if(self.image is not None and self.image.shape[0]==256):
                 # Check Mask
-                if(self.mask is not None):
+                if(self.mask is not None and self.mask.shape[0]==256):
                     self.segment = KerasPredict(self.image)
                     self.getMetrics()
                     # Show Segmentation
@@ -463,6 +470,7 @@ class Ui_MainWindow(object):
                     qmap = QPixmap(qimg)
                     self.LB_Prediction.setPixmap(qmap)
                     self.LB_Prediction.setScaledContents(True) 
+
                 else:
                     Q = QWidget()
                     message = QMessageBox.warning(Q, "About","Please Load the Mask also to calculate Metrics!", QMessageBox.Ok)
@@ -491,6 +499,9 @@ class Ui_MainWindow(object):
                     qmap = QPixmap('segmentPyTorch.png')
                     self.LB_Prediction.setPixmap(qmap)
                     self.LB_Prediction.setScaledContents(True)
+
+                    if(os.path.isfile("segmentPyTorch.png")):
+                        os.remove("segmentPyTorch.png")
                 else:
                     Q = QWidget()
                     message = QMessageBox.warning(Q, "About","Please Load the Mask also to calculate Metrics!", QMessageBox.Ok)
@@ -501,6 +512,12 @@ class Ui_MainWindow(object):
     #---------------------------------------------------------------------------------------------
     def plotCurves(self):
         if((self.segment is not None) and (self.mask is not None)):
+
+            if(os.path.isfile("BlandAltman.png")):
+                os.remove("BlandAltman.png")
+            if(os.path.isfile("ROC.png")):
+                os.remove("ROC.png")
+
             bland_altman_plot(self.mask, self.segment)
             pred = roc_preprocess(self.segment)
             draw_roc_curve(self.mask, pred)

@@ -117,6 +117,8 @@ def draw_roc_curve(gt,pred,multi=False,num_class = 4,img_height = 256,img_width 
     plt.title('Some extension of Receiver operating characteristic to multi-class')
     plt.legend(loc="lower right")
     plt.savefig('ROC.png')
+    plt.close('all')
+    # plt.clf()
     # plt.show()  
 #=====================================================================================
 #=====================================

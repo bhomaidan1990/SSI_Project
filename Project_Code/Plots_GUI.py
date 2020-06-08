@@ -9,13 +9,6 @@ class PlotsWindow(object):
         Dialog.setObjectName("Dialog")
         Dialog.resize(1600, 800)
 
-        #------------------------------------------------------
-        # Main Window
-        #==============
-        # MainWindow.setObjectName("MainWindow")
-        # MainWindow.resize(1600, 800)
-        # self.centralwidget = QtWidgets.QWidget(MainWindow)
-        # self.centralwidget.setObjectName("centralwidget")
         #------- Initialization --------------------------
         self.BA_directory  = 'BlandAltman.png'
         self.ROC_directory = 'ROC.png'
