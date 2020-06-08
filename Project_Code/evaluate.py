@@ -228,8 +228,8 @@ def bland_altman_plot(m1, m2,
 
     if sd_limit > 0:
         half_ylim = (1.5 * sd_limit) * std_diff
-        ax.set_ylim(mean_diff - half_ylim,
-                    mean_diff + half_ylim)
+        # ax.set_ylim(mean_diff - half_ylim,
+        #             mean_diff + half_ylim)
 
         limit_of_agreement = sd_limit * std_diff
         lower = mean_diff - limit_of_agreement
@@ -250,8 +250,8 @@ def bland_altman_plot(m1, m2,
 
     elif sd_limit == 0:
         half_ylim = 3 * std_diff
-        ax.set_ylim(mean_diff - half_ylim,
-                    mean_diff + half_ylim)
+        # ax.set_ylim(mean_diff - half_ylim,
+        #             mean_diff + half_ylim)
 
     ax.set_ylabel('Difference', fontsize=15)
     ax.set_xlabel('Means', fontsize=15)
