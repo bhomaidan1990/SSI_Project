@@ -7,6 +7,7 @@ import sys
 import shutil
 import numpy as np
 from skimage.io import imread, imsave
+from scipy.stats.mstats import pearsonr
 #---------------------------------------------------
 # KerasPredict(image2D,modelPath)
 from Predict import KerasPredict  
@@ -447,10 +448,10 @@ class Ui_MainWindow(object):
         self.metrics['Jaccard']   = 100*jc(self.segment, self.mask)
         self.LB_JaccardValue.setText(str(round(self.metrics['Jaccard'],3))+" %")
         # P 
-        self.metrics['P_Value']   = volume_change_correlation(self.segment, self.mask)[1]
+        self.metrics['P_Value']   = pearsonr(self.segment.ravel(), self.mask.ravel())[1]
         self.LB_P_Value.setText(str(round(self.metrics['P_Value'],3)))
         # Pearson Corellation Coefficient
-        self.metrics['Pearson']   = volume_change_correlation(self.segment, self.mask)[0]
+        self.metrics['Pearson']   = pearsonr(self.segment.ravel(), self.mask.ravel())[0]
         self.LB_PearsonValue.setText(str(round(self.metrics['Pearson'],3)))
     #---------------------------------------------------------------------------------------------
     def SegmentProcess(self):

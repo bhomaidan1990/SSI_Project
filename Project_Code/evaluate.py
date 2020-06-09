@@ -178,8 +178,16 @@ def bland_altman_plot(m1, m2,
     m1 = np.argmax(m1,axis=2)
     m2 = np.argmax(m2,axis=2)
 
-    m1 = m1.ravel()
-    m2 = m2.ravel()
+    # calculate surface areas for each class
+    l1 = []
+    l2 = []
+    for i in range(4):
+        l1.append((np.count_nonzero(m1==i))/(m1.shape[0]*m1.shape[1]))
+        l2.append((np.count_nonzero(m2==i))/(m1.shape[0]*m1.shape[1]))
+
+
+    m1 = np.array(l1)
+    m2 = np.array(l2)
     
     # Compare the lengths of the samples coming from a two different methods
     if len(m1) != len(m2):
