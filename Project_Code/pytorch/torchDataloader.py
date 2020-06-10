@@ -13,6 +13,18 @@ def reverse_one_hot(label):
     for i in range(num_class):
         result[label[i,:,:]==1] = i
     return result
+    
+def oneHotMask(mask, cataNum=4):
+    shape = mask.shape
+    shape = list(shape)
+    shape.append(cataNum)
+    result = np.zeros(shape)
+    # print(np.max(mask))
+    for i in range(cataNum):
+        temp = np.zeros(mask.shape)
+        temp[mask==i] = 1
+        result[:,:,i] = temp
+    return result
 
 def crop2D(img, newSize):
     x = img.shape[-2]
@@ -31,6 +43,25 @@ def crop2D(img, newSize):
     cy = int(cropY/2)
 
     return img[:,cx:x-cx-ex,cy:y-cy-ey]
+
+def crop3D(img, newSize):
+    x = img.shape[-2]
+    y = img.shape[-1]
+    cropX = x - newSize[0]
+    cropY = y - newSize[1]
+    if cropX % 2 == 0:
+        ex = 0
+    else:
+        ex = 1
+    if cropY % 2 == 0:
+        ey = 0
+    else:
+        ey = 1
+    cx = int(cropX/2)
+    cy = int(cropY/2)
+    test = img[:, :, cx:x-cx-ex, cy:y-cy-ey]
+    return test
+
 
 class MyDataset(Dataset):
     def __init__(self, img_path, label_path, img_size=48, reverse_one_hot=False, transfrom=None, resize=False):
