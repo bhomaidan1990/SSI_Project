@@ -142,7 +142,7 @@ def bland_altman_plot(m1, m2,
 
     Parameters
     ----------
-    m1, m2: ND array-like
+    m1, m2: ND array-like [NxHxWx4] One Hot Encoded: [0 1]
     (in our case m1 should be the mask, while, m2 is the prediction)
     sd_limit : float, default 1.96
         The limit of agreements expressed in terms of the standard deviation of
@@ -175,16 +175,30 @@ def bland_altman_plot(m1, m2,
     Plot of Bland Altman
     # ax: matplotlib Axis object
     """
-    m1 = np.argmax(m1,axis=2)
-    m2 = np.argmax(m2,axis=2)
+    if(len(m1.shape)==3):
 
-    # calculate surface areas for each class
-    l1 = []
-    l2 = []
-    for i in range(4):
-        l1.append((np.count_nonzero(m1==i))/(m1.shape[0]*m1.shape[1]))
-        l2.append((np.count_nonzero(m2==i))/(m1.shape[0]*m1.shape[1]))
+        m1 = np.argmax(m1,axis=2)
+        m2 = np.argmax(m2,axis=2)
 
+        # calculate surface areas for each class
+        l1 = []
+        l2 = []
+        for i in range(4):
+            l1.append((np.count_nonzero(m1==i))/(m1.shape[0]*m1.shape[1]))
+            l2.append((np.count_nonzero(m2==i))/(m1.shape[0]*m1.shape[1]))
+
+    if(len(m1.shape)==4):
+        
+        m1 = np.argmax(m1,axis=3)
+        m2 = np.argmax(m2,axis=3)
+
+        # calculate surface areas for each class
+        l1 = []
+        l2 = []
+        for i in range(4):
+            for j in range(m1.shape[0]):
+                l1.append((np.count_nonzero(m1[j,...]==i))/(m1.shape[1]*m1.shape[2]))
+                l2.append((np.count_nonzero(m2[j,...]==i))/(m1.shape[1]*m1.shape[2]))
 
     m1 = np.array(l1)
     m2 = np.array(l2)
