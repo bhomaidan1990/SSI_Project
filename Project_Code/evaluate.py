@@ -156,25 +156,50 @@ def surfaceAreas(masks,segs):
 #=======================================================================================================
 import matplotlib.pyplot as plt
 
-def bland_altman_plot(data1, data2,*args, **kwargs):
-    m1, m2 = surfaceAreas(data1, data2)
-    for class_num in range(m1.shape[1]):
+def bland_altman_plot(data1, data2, Multiple=False, *args, **kwargs):
+    if (Multiple):
+       
+        m1, m2 = surfaceAreas(data1, data2)
+        for class_num in range(m1.shape[1]):
 
-        data1     = np.asarray(m1[:,class_num])
-        data2     = np.asarray(m2[:,class_num])
+            data1     = np.asarray(m1[:,class_num])
+            data2     = np.asarray(m2[:,class_num])
+            mean      = np.mean([data1, data2], axis=0)
+            diff      = data1 - data2                   # Difference between data1 and data2
+            md        = np.mean(diff)                   # Mean of the difference
+            sd        = np.std(diff, axis=0)            # Standard deviation of the difference
+            plt.subplot(2,2,(class_num+1))
+            plt.scatter(mean, diff, *args, **kwargs)
+            plt.axhline(md,           color='gray', linestyle='--')
+            plt.axhline(md + 1.96*sd, color='gray', linestyle='--')
+            plt.axhline(md - 1.96*sd, color='gray', linestyle='--')
+            plt.xlabel("Average of 2 measures")
+            plt.ylabel("Difference between 2 measures")
+            plt.title('class_%d'%class_num)
+        # plt.show()
+        plt.savefig("BlandAltman.png")
+        plt.close('all')
+    
+    else:
+
+
+        data1     = np.argmax(data1,axis=2).ravel()
+        data2     = np.argmax(data2,axis=2).ravel()
+        
         mean      = np.mean([data1, data2], axis=0)
         diff      = data1 - data2                   # Difference between data1 and data2
         md        = np.mean(diff)                   # Mean of the difference
-        sd        = np.std(diff, axis=0)            # Standard deviation of the difference
-        plt.subplot(2,2,(class_num+1))
+        sd        = np.std(diff,axis=0)             # Standard deviation of the difference
         plt.scatter(mean, diff, *args, **kwargs)
         plt.axhline(md,           color='gray', linestyle='--')
         plt.axhline(md + 1.96*sd, color='gray', linestyle='--')
         plt.axhline(md - 1.96*sd, color='gray', linestyle='--')
-        plt.title('class_%d'%class_num)
-    # plt.show()
-    plt.savefig("BlandAltman.png")
-    plt.close('all')
+        plt.xlabel("Average of 2 measures")
+        plt.ylabel("Difference between 2 measures")
+        plt.title('BlandAltman')
+        # plt.show()
+        plt.savefig("BlandAltman.png")
+        plt.close('all')
 #===================================================================================================
 
 #--------------------------------------------------------------------------------------------
