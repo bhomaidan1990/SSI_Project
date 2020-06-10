@@ -13,7 +13,7 @@ Covid-19 CT Scans Segmentaion, Project of Scene Segmentation, and Interpretion
 | Task    |     Status     |  Notes | Check |
 | ------------- |:-------------:|:-----:|:-----:|
 | Dataset Understanding      | Done | All |:heavy_check_mark:|
-| PreProcessing      | In-Progress   |  All  |:heavy_check_mark:|
+| PreProcessing      | Done   |  All  |:heavy_check_mark:|
 | Augmentation | Cancelled  |  All  |:heavy_check_mark:|
 | Architecture | Done  |  All  |:heavy_check_mark:|
 | Training | Done  |  All  |:heavy_check_mark:|
